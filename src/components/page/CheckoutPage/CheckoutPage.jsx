@@ -56,7 +56,7 @@ function CheckoutPage() {
   The code will be as modular as possible and split as per React's suggestion. Code will be split,
   according to topic so it makes more sense. There will also be documentation explaining the logic for ,
   component. 
-  
+
 
   */
   return (
@@ -75,6 +75,21 @@ function CheckoutPage() {
         >
           CDL Checkout Coding Test
         </Typography>
+        <Grid container>
+          <Grid container gap="2rem" width="60%">
+            {store_items.map((store_item) => {
+              return (
+                <Grid item key={store_item.item_name}>
+                  <ProductCard
+                    store_item={store_item}
+                    setUserCheckout={setUserCheckout}
+                    userCheckout={userCheckout}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Grid>
       </Grid>
     </>
   );
