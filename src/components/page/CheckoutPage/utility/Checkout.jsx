@@ -12,6 +12,21 @@ function Checkout(props) {
 
   The pay button resets the usercheckout data
   */
+
+  const running_total = props.userCheckout
+    .map((checkout_item) => {
+      const unit_price = props.store_items.filter((item) => {
+        return checkout_item.item_name == item.item_name;
+      })[0].unit_price;
+      return checkout_item.quantity * unit_price;
+    })
+    .reduce((a, b) => a + b, 0);
+
+  const final_total = props.userCheckout
+    .map((checkout_item) => {
+      return checkout_item.total_amount;
+    })
+    .reduce((a, b) => a + b, 0);
   return (
     <>
       <Grid
@@ -56,10 +71,10 @@ function Checkout(props) {
         })}
         <Divider />
         <Typography gutterBottom variant="h6" component="div">
-          {`Running Total £`}
+          {`Running Total £${(running_total / 100).toFixed(2)}`}
         </Typography>
         <Typography gutterBottom variant="h6" component="div">
-          {`Final Total £`}
+          {`Final Total £${(final_total / 100).toFixed(2)}`}
         </Typography>
 
         <Button
