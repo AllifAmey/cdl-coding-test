@@ -50,7 +50,9 @@ function ProductCard(props) {
         </Typography>
         <Typography variant="body2">
           {props.store_item.special_price
-            ? `Get ${props.store_item.special_deal.special_quantity} for ${props.store_item.special_deal.special_amount} `
+            ? `Get ${props.store_item.special_deal.special_quantity} for £${(
+                props.store_item.special_deal.special_amount / 100
+              ).toFixed(2)} `
             : "No Special Deal"}
         </Typography>
       </CardContent>
@@ -61,7 +63,82 @@ function ProductCard(props) {
           padding: "1rem",
         }}
       >
-        <Button endIcon={<AddShoppingCartIcon color="primary" />}>Add</Button>
+        <Button
+          endIcon={<AddShoppingCartIcon color="primary" />}
+          onClick={() => {
+            /*
+            logic explanation: 
+            First if the user's item exist to check that see if there is a match in the current user data,
+            for the item by using the filter function.
+            If there is a match the length should be 1 not 0,
+            if there is no match then it should be 0 as the filter found nothing.
+
+            If there is no match add the item to the usercheckout by doing push.
+            The data should consist of the item data, the quantity and the total amount.
+
+            If there is a match then only the quantity and the total_amount is added.
+            There will also be a check for special deals.
+
+            If there is no special deal then the total amount would be added
+            If there is a special deal then the quantity will be used to calculate the total,
+            along with the data inside of the special deal. 
+
+            */
+
+            // store user current data
+            let currentUserData = props.userCheckout;
+            const check_item_exist = currentUserData.filter((item) => {
+              return item.item_name == props.store_item.item_name;
+            });
+            // check if item exist
+            if (check_item_exist.length == 0) {
+              //hard copy to prevent errors
+              const add_item = {
+                ...props.store_item,
+                quantity: 1,
+                total_amount: props.store_item.unit_price,
+              };
+              delete add_item.unit_price;
+              currentUserData.push({ ...add_item });
+            } else {
+              const index = currentUserData.findIndex((item) => {
+                return item.item_name == props.store_item.item_name;
+              });
+
+              // check if special price
+              const check_special_price = currentUserData[index].special_price;
+              currentUserData[index].quantity++;
+              if (check_special_price) {
+                const special_quantity =
+                  props.store_item.special_deal.special_quantity;
+                const special_amount =
+                  props.store_item.special_deal.special_amount;
+                let current_quantity = currentUserData[index].quantity;
+
+                if (current_quantity < special_quantity) {
+                  currentUserData[index].total_amount +=
+                    props.store_item.unit_price;
+                } else {
+                  const remainder = current_quantity % special_quantity;
+                  current_quantity -= remainder;
+                  const total_special_price =
+                    (current_quantity / special_quantity) * special_amount;
+                  const total_normal_price =
+                    remainder * props.store_item.unit_price;
+                  const total_price = total_special_price + total_normal_price;
+
+                  currentUserData[index].total_amount = total_price;
+                }
+              } else {
+                currentUserData[index].total_amount +=
+                  props.store_item.unit_price;
+              }
+            }
+            props.setUserCheckout([...currentUserData]);
+          }}
+        >
+          Add
+        </Button>
       </CardActions>
     </Card>
   );

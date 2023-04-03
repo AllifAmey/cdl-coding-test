@@ -89,6 +89,11 @@ function CheckoutPage() {
               );
             })}
           </Grid>
+          <Checkout
+            userCheckout={userCheckout}
+            setUserCheckout={setUserCheckout}
+            store_items={store_items}
+          />
         </Grid>
       </Grid>
     </>
